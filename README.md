@@ -15,7 +15,7 @@ bun dev
 ```
 
 create .env for database
-
+```bash
 DB_HOST=localhost
 DB_USER=crm-do          # Your WAMP/MySQL username (e.g., root or a specific user)
 DB_PASSWORD=Dutch@989     # Your WAMP/MySQL password
@@ -23,7 +23,7 @@ DB_DATABASE=crm-do # The name of your database
 DB_PORT=8889              # The MySQL port (default is 3306)
 
 DATABASE_URL="mysql://crm-do:Dutch%40989@localhost:8889/crm-do"
-
+```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
