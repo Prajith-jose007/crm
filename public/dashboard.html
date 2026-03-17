@@ -2276,7 +2276,8 @@
         _cache.contacts = Array.isArray(contactsRes) ? contactsRes.map(contactFromAPI) : [];
         _cache.companies = Array.isArray(companiesRes) ? companiesRes.map(companyFromAPI) : [];
         _loaded = true;
-        renderAll();
+        const currentPage = window.location.pathname.replace(/^\//, '') || 'dashboard';
+        showPage(currentPage);
       } catch (e) {
         console.error('Failed to load CRM data:', e);
         _loaded = true;
