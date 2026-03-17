@@ -11,16 +11,16 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
+  id            Int           @id @default(autoincrement())
   name          String
-  code          String?        @unique
-  password      String?        @default("Dutch@26")
-  role          UserRole       @default(SALES_EXECUTIVE)
-  color         String         @default("#3A6EA5")
+  code          String?       @unique
+  password      String?       @default("Dutch@26")
+  role          UserRole      @default(SALES_EXECUTIVE)
+  color         String        @default("#3A6EA5")
   opportunities Opportunity[]
   visitReports  VisitReport[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@map("users")
 }
@@ -33,21 +33,21 @@ enum UserRole {
 }
 
 model Company {
-  id             Int            @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   name           String
   type           CompanyType?
   classification Classification?
-  address        String?        @db.Text
+  address        String?         @db.Text
   city           String?
-  country        String         @default("UAE")
+  country        String          @default("UAE")
   phone          String?
   email          String?
   website        String?
-  notes          String?        @db.Text
+  notes          String?         @db.Text
   contacts       Contact[]
   visitReports   VisitReport[]
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@map("companies")
 }
@@ -68,21 +68,21 @@ enum Classification {
 }
 
 model Contact {
-  id             Int             @id @default(autoincrement())
+  id             Int                   @id @default(autoincrement())
   firstName      String
   lastName       String
   title          String?
   companyId      Int?
-  company        Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  company        Company?              @relation(fields: [companyId], references: [id], onDelete: SetNull)
   email          String?
   phone          String?
   nationality    String?
   responsibility ContactResponsibility @default(NEUTRAL)
-  notes          String?         @db.Text
+  notes          String?               @db.Text
   opportunities  Opportunity[]
   visitReports   VisitReport[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 
   @@map("contacts")
 }
@@ -141,28 +141,28 @@ enum OpportunityStatus {
 }
 
 model VisitReport {
-  id             Int           @id @default(autoincrement())
-  companyId      Int
-  company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  contactId      Int?
-  contact        Contact?      @relation(fields: [contactId], references: [id], onDelete: SetNull)
-  visitDate      DateTime
-  visitType      VisitType     @default(IN_PERSON)
-  ownerId        Int?
-  owner          User?         @relation(fields: [ownerId], references: [id], onDelete: SetNull)
-  attendees      String?       @db.Text
-  objective      String?
-  summary        String?       @db.Text
-  outcome        String?       @db.Text
-  nextSteps      String?       @db.Text
-  followupDate   DateTime?
-  sentiment      Sentiment     @default(NEUTRAL)
-  budget         Decimal?      @db.Decimal(15, 2)
-  competitor     String?
-  opportunityId  Int?
-  opportunity    Opportunity?  @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id            Int          @id @default(autoincrement())
+  companyId     Int
+  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contactId     Int?
+  contact       Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  visitDate     DateTime
+  visitType     VisitType    @default(IN_PERSON)
+  ownerId       Int?
+  owner         User?        @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  attendees     String?      @db.Text
+  objective     String?
+  summary       String?      @db.Text
+  outcome       String?      @db.Text
+  nextSteps     String?      @db.Text
+  followupDate  DateTime?
+  sentiment     Sentiment    @default(NEUTRAL)
+  budget        Decimal?     @db.Decimal(15, 2)
+  competitor    String?
+  opportunityId Int?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
   @@map("visit_reports")
 }
