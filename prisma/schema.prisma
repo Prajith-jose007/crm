@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  code          String?        @unique
+  password      String?        @default("Dutch@26")
+  role          UserRole       @default(SALES_EXECUTIVE)
+  color         String         @default("#3A6EA5")
+  opportunities Opportunity[]
+  visitReports  VisitReport[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  SALES_EXECUTIVE
+  SALES_MANAGER
+  ADMIN
+  RESERVATION_AGENT
+}
+
+model Company {
+  id             Int            @id @default(autoincrement())
+  name           String
+  type           CompanyType?
+  classification Classification?
+  address        String?        @db.Text
+  city           String?
+  country        String         @default("UAE")
+  phone          String?
+  email          String?
+  website        String?
+  notes          String?        @db.Text
+  contacts       Contact[]
+  visitReports   VisitReport[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@map("companies")
+}
+
+enum CompanyType {
+  PRIVATE
+  DMC
+  FREELANCER
+  AGENCY
+  OTHER
+}
+
+enum Classification {
+  HS
+  S
+  HP
+  G
+}
+
+model Contact {
+  id             Int             @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  title          String?
+  companyId      Int?
+  company        Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  email          String?
+  phone          String?
+  nationality    String?
+  responsibility ContactResponsibility @default(NEUTRAL)
+  notes          String?         @db.Text
+  opportunities  Opportunity[]
+  visitReports   VisitReport[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("contacts")
+}
+
+enum ContactResponsibility {
+  DECISION_MAKER
+  INFLUENCER
+  NEUTRAL
+  BLOCKER
+}
+
+model Opportunity {
+  id             Int               @id @default(autoincrement())
+  clientName     String
+  yacht          String
+  guestName      String?
+  eventTopic     String
+  ownerId        Int?
+  owner          User?             @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  priority       Priority          @default(WARM)
+  phase          PipelinePhase     @default(IDENTIFICATION)
+  status         OpportunityStatus @default(OPEN)
+  estimatedValue Decimal           @default(0.00) @db.Decimal(15, 2)
+  mev            Decimal           @default(0.00) @db.Decimal(15, 2)
+  probability    Int               @default(10)
+  closeMonth     String?
+  closeYear      Int?
+  followupDate   DateTime?
+  notes          String?           @db.Text
+  contactId      Int?
+  contact        Contact?          @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  visitReports   VisitReport[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@map("opportunities")
+}
+
+enum Priority {
+  HOT
+  WARM
+  COLD
+}
+
+enum PipelinePhase {
+  IDENTIFICATION
+  QUALIFICATION
+  PROPOSAL
+  COMMITMENT
+}
+
+enum OpportunityStatus {
+  OPEN
+  CLOSE_WON
+  CLOSE_LOST
+}
+
+model VisitReport {
+  id             Int           @id @default(autoincrement())
+  companyId      Int
+  company        Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  contactId      Int?
+  contact        Contact?      @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  visitDate      DateTime
+  visitType      VisitType     @default(IN_PERSON)
+  ownerId        Int?
+  owner          User?         @relation(fields: [ownerId], references: [id], onDelete: SetNull)
+  attendees      String?       @db.Text
+  objective      String?
+  summary        String?       @db.Text
+  outcome        String?       @db.Text
+  nextSteps      String?       @db.Text
+  followupDate   DateTime?
+  sentiment      Sentiment     @default(NEUTRAL)
+  budget         Decimal?      @db.Decimal(15, 2)
+  competitor     String?
+  opportunityId  Int?
+  opportunity    Opportunity?  @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@map("visit_reports")
+}
+
+enum VisitType {
+  IN_PERSON
+  VIDEO_CALL
+  PHONE
+  EMAIL
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+}
