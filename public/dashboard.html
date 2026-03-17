@@ -2249,23 +2249,49 @@
     // Load all data from the API once
     async function loadAllData() {
       try {
+        const fetchAPI = async (url) => {
+          const r = await fetch(url + '?t=' + Date.now());
+          if (!r.ok) {
+            console.error(`API Error ${r.status} for ${url}`);
+            if (r.status === 500) {
+              _serverError = true;
+              showError(`Server error (500) from ${url}. Please check your .env settings on the server.`);
+            }
+            return [];
+          }
+          return r.json();
+        };
+
         const [usersRes, oppsRes, visitsRes, contactsRes, companiesRes] = await Promise.all([
-          fetch('/api/users?t=' + Date.now()).then(r => r.json()).catch(() => []),
-          fetch('/api/opportunities?t=' + Date.now()).then(r => r.json()).catch(() => []),
-          fetch('/api/visits?t=' + Date.now()).then(r => r.json()).catch(() => []),
-          fetch('/api/contacts?t=' + Date.now()).then(r => r.json()).catch(() => []),
-          fetch('/api/companies?t=' + Date.now()).then(r => r.json()).catch(() => []),
+          fetchAPI('/api/users'),
+          fetchAPI('/api/opportunities'),
+          fetchAPI('/api/visits'),
+          fetchAPI('/api/contacts'),
+          fetchAPI('/api/companies'),
         ]);
+
         _cache.users = Array.isArray(usersRes) ? usersRes.map(userFromAPI) : [];
         _cache.opps = Array.isArray(oppsRes) ? oppsRes.map(oppFromAPI) : [];
         _cache.visits = Array.isArray(visitsRes) ? visitsRes.map(visitFromAPI) : [];
         _cache.contacts = Array.isArray(contactsRes) ? contactsRes.map(contactFromAPI) : [];
         _cache.companies = Array.isArray(companiesRes) ? companiesRes.map(companyFromAPI) : [];
         _loaded = true;
+        renderAll();
       } catch (e) {
         console.error('Failed to load CRM data:', e);
         _loaded = true;
       }
+    }
+
+    let _serverError = false;
+    function showError(msg) {
+      const banner = document.getElementById('user-banner');
+      const text = document.getElementById('user-banner-text');
+      banner.className = 'user-context-banner';
+      banner.style.background = '#fef2f2';
+      banner.style.color = '#991b1b';
+      banner.style.border = '1px solid #fee2e2';
+      text.textContent = msg;
     }
 
     let currentUser = null;
