@@ -4350,6 +4350,12 @@
     // =============================================
     // COMPANIES
     // =============================================
+    function classBadge(c) {
+      if (!c) return '—';
+      const map = { 'HS': 'badge-red', 'S': 'badge-gold', 'HP': 'badge-green', 'G': 'badge-blue' };
+      return `<span class="badge ${map[c] || 'badge-gray'}">${c}</span>`;
+    }
+
     function renderCompanies() {
       const companies = DB.get('companies');
       const contacts = DB.get('contacts');
@@ -4371,7 +4377,7 @@
         return `<tr>
       <td><div style="font-weight:600">${co.name}</div>${co.address ? `<div style="font-size:11px;color:var(--text3)">${co.address}</div>` : ''}</td>
       <td>${co.type ? `<span class="badge badge-blue">${co.type}</span>` : '—'}</td>
-      <td>${co.classification ? `<span class="badge badge-gold">${co.classification}</span>` : '—'}</td>
+      <td>${classBadge(co.classification)}</td>
       <td style="font-size:12px">${co.city || '—'}</td>
       <td style="font-size:12px">${co.country || '—'}</td>
       <td style="font-size:12px">${co.phone || '—'}</td>
