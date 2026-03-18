@@ -3724,14 +3724,12 @@
       const isManagerOrAdmin = u && (u.role === 'ADMIN' || u.role === 'SALES_MANAGER');
       const oppOwnerFilterEl = document.getElementById('opp-filter-owner');
 
-      if (!isManagerOrAdmin && oppOwnerFilterEl) {
-        oppOwnerFilterEl.style.display = 'none';
-      } else if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('All Owners')) {
+      if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('All Owners')) {
         oppOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name}</option>`).join('');
       }
 
       const search = (document.getElementById('opp-search') || {}).value?.toLowerCase() || '';
-      const ownerF = (oppOwnerFilterEl || {}).value || (isManagerOrAdmin ? '' : currentUser) || '';
+      const ownerF = (oppOwnerFilterEl || {}).value || '';
       const phaseF = (document.getElementById('opp-filter-phase') || {}).value || '';
       const prioF = (document.getElementById('opp-filter-priority') || {}).value || '';
       const statusF = (document.getElementById('opp-filter-status') || {}).value || '';
@@ -3899,13 +3897,11 @@
       const isManagerOrAdmin = u && (u.role === 'ADMIN' || u.role === 'SALES_MANAGER');
       const visOwnerFilterEl = document.getElementById('visit-filter-owner');
 
-      if (!isManagerOrAdmin && visOwnerFilterEl) {
-        visOwnerFilterEl.style.display = 'none';
-      } else if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('All Owners')) {
+      if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('All Owners')) {
         visOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name}</option>`).join('');
       }
 
-      const ownerF = (visOwnerFilterEl || {}).value || (isManagerOrAdmin ? '' : currentUser) || '';
+      const ownerF = (visOwnerFilterEl || {}).value || '';
       const sentF = (document.getElementById('visit-filter-sentiment') || {}).value || '';
 
       const filtered = visits.filter(v => {
