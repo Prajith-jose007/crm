@@ -28,6 +28,25 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
+        
+        // Validate name
+        if (!body.name) {
+            return NextResponse.json({ error: "Company name is required" }, { status: 400 });
+        }
+
+        // Check for duplicate name
+        const existing = await prisma.company.findFirst({
+            where: {
+                name: {
+                    equals: body.name,
+                }
+            }
+        });
+
+        if (existing) {
+            return NextResponse.json({ error: "A company with this name already exists" }, { status: 400 });
+        }
+
         const newCompany = await prisma.company.create({
             data: {
                 name: body.name,

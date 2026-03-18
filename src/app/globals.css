@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 :root {
-  --primary: #3A6EA5;
-  --primary-dark: #2B5480;
-  --primary-light: #e8f0f9;
+  --primary: #2E5D9A;
+  --primary-hover: #234B7A;
+  --primary-light: #f3f6fa;
+  --primary-dark: #1B3D66;
   --primary-mid: #2E5D9A;
   --accent: #3A6EA5;
   --accent2: #00b4d8;
@@ -26,6 +29,7 @@
   --shadow-lg: 0 6.4px 14.4px rgba(0, 0, 0, .13), 0 1.2px 3.6px rgba(0, 0, 0, .11);
   --radius: 4px;
   --radius-lg: 8px;
+  --radius-full: 9999px;
 }
 
 * {
@@ -40,6 +44,12 @@ body {
   color: var(--text);
   font-size: 14px;
   line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .page-title, .card-title, .modal-title {
+  font-family: 'Segoe UI', 'Inter', sans-serif;
+  text-transform: uppercase;
 }
 
 /* TOP HEADER BAR */
@@ -62,12 +72,13 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
   letter-spacing: -0.2px;
   padding-right: 16px;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.25);
+  text-transform: uppercase;
 }
 
 .topbar-logo svg {
@@ -87,13 +98,14 @@ body {
   gap: 6px;
   padding: 6px 14px;
   border-radius: var(--radius);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 13px;
-  font-weight: 500;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   border: none;
   background: none;
   transition: all .15s;
+  text-transform: uppercase;
 }
 
 .topbar-btn:hover {
@@ -102,9 +114,9 @@ body {
 }
 
 .topbar-btn.active {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.25);
   color: #fff;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .topbar-btn svg {
@@ -232,6 +244,8 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .dropdown-all:hover {
@@ -470,8 +484,9 @@ tbody tr:last-child td {
   padding: 2px 10px;
   border-radius: 12px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .badge-blue {
@@ -517,6 +532,8 @@ tbody tr:last-child td {
   cursor: pointer;
   border: 1px solid transparent;
   transition: all .15s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary {
@@ -741,6 +758,7 @@ textarea.inp {
   font-size: 13px;
   color: var(--text);
   transition: border .15s;
+  text-transform: uppercase;
 }
 
 input.inp:focus,
