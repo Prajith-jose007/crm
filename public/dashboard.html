@@ -1672,7 +1672,6 @@
           <option>DMC</option>
           <option>Freelancer</option>
           <option>Agency</option>
-          <option>Other</option>
         </select>
         <select class="filter-sel" id="company-filter-class" onchange="renderCompanies()">
           <option value="">All Classifications</option>
@@ -2058,7 +2057,6 @@
                 <option>DMC</option>
                 <option>Freelancer</option>
                 <option>Agency</option>
-                <option>Other</option>
               </select>
             </div>
             <div class="form-group"><label class="lbl">Classification</label>
@@ -3875,13 +3873,6 @@
         document.getElementById('o-notes').value = o.notes || '';
         document.getElementById('o-contact').value = o.contactName || o.contact || '';
       }, 60);
-    }
-
-    function deleteOpp(id) {
-      if (!confirm('Delete this opportunity?')) return;
-      DB.set('opps', DB.get('opps').filter(o => o.id !== id));
-      renderOpps(); renderDashboard();
-      toast('Opportunity deleted');
     }
 
     // =============================================
