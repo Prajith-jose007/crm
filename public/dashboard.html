@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FleetSell CRM</title>
+  <title>Sitix CRM</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -3314,7 +3314,7 @@
         html += `
           <div class="user-option ${currentDashOwner === u.code ? 'selected' : ''}" onclick="selectUser('${u.code}')">
             <div class="ua" style="background:${u.color}">${u.code.substring(0, 2)}</div>
-            ${u.name}
+            ${u.code}
           </div>
         `;
       });
@@ -3328,7 +3328,7 @@
       const u = currentDashOwner ? getUserByCode(currentDashOwner) : null;
       document.getElementById('chip-avatar').textContent = u ? u.code.substring(0, 2) : 'AL';
       document.getElementById('chip-avatar').style.background = u ? `linear-gradient(135deg, ${u.color}cc, ${u.color})` : '#555';
-      document.getElementById('chip-name').textContent = u ? u.name : 'All Users';
+      document.getElementById('chip-name').textContent = u ? u.code : 'All Users';
 
       // Update dashboard filter
       const dashSel = document.getElementById('dash-owner-select');
@@ -3358,7 +3358,7 @@
       });
       const u = currentDashOwner ? getUserByCode(currentDashOwner) : null;
       if (document.getElementById('dash-breadcrumb'))
-        document.getElementById('dash-breadcrumb').textContent = u ? `Overview · ${u.name}` : 'Overview · All Users';
+        document.getElementById('dash-breadcrumb').textContent = u ? `Overview · ${u.code}` : 'Overview · All Users';
     }
 
     function toggleUserDropdown() {
@@ -3404,7 +3404,7 @@
 
     function populateOwnerFilters() {
       const users = getUsers();
-      const opts = '<option value="">All Owners</option>' + users.map(u => `<option value="${u.code}">${u.name}</option>`).join('');
+      const opts = '<option value="">All Owners</option>' + users.map(u => `<option value="${u.code}">${u.code}</option>`).join('');
       ['opp-filter-owner', 'visit-filter-owner'].forEach(id => {
         const el = document.getElementById(id); if (el) el.innerHTML = opts;
         if (currentUser && el) el.value = currentUser;
@@ -3513,7 +3513,7 @@
         } else {
           dashSel.style.display = 'inline-block';
           if (dashSel.options.length <= 1) {
-            dashSel.innerHTML = '<option value="">All Users</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name}</option>`).join('');
+            dashSel.innerHTML = '<option value="">All Users</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
           }
           if (currentDashOwner !== undefined && currentDashOwner !== null) {
             dashSel.value = currentDashOwner;
@@ -3563,7 +3563,7 @@
         CHARTS['won-owner'] = new Chart(ctx1, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name),
+            labels: chartUsers.map(u => u.code),
             datasets: [{
               label: 'Close Won (AED)', data: wonByOwner,
               backgroundColor: chartUsers.map(u => u.color + 'bb'),
@@ -3592,7 +3592,7 @@
         CHARTS['phase-owner'] = new Chart(ctx2, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name),  // X-axis = owner names
+            labels: chartUsers.map(u => u.code),  // X-axis = owner names
             datasets: phases.map((p, i) => ({
               label: phaseShort[i],  // legend = phase names
               data: chartUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open' && o.phase === p).reduce((a, b) => a + Number(b.value || 0), 0)),
@@ -3624,7 +3624,7 @@
         CHARTS['count-owner'] = new Chart(ctx3, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name),
+            labels: chartUsers.map(u => u.code),
             datasets: [{
               label: '# Open Opportunities',
               data: countByOwner,
@@ -3727,7 +3727,7 @@
       if (!isManagerOrAdmin && oppOwnerFilterEl) {
         oppOwnerFilterEl.style.display = 'none';
       } else if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('All Owners')) {
-        oppOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name}</option>`).join('');
+        oppOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
       }
 
       const search = (document.getElementById('opp-search') || {}).value?.toLowerCase() || '';
@@ -3902,7 +3902,7 @@
       if (!isManagerOrAdmin && visOwnerFilterEl) {
         visOwnerFilterEl.style.display = 'none';
       } else if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('All Owners')) {
-        visOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name}</option>`).join('');
+        visOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
       }
 
       const ownerF = (visOwnerFilterEl || {}).value || (isManagerOrAdmin ? '' : currentUser) || '';
@@ -4311,7 +4311,7 @@
       const cOpts = '<option value="">Select contact...</option>' + contacts.map(c => `<option value="${c.id}">${c.fname} ${c.lname} (${c.company})</option>`).join('');
       // Populate company dropdown in contact modal
       // c-company is now a typeahead text input — no population needed
-      const uOpts = '<option value="">Select owner...</option>' + users.map(u => `<option value="${u.code}">${u.name}</option>`).join('');
+      const uOpts = '<option value="">Select owner...</option>' + users.map(u => `<option value="${u.code}">${u.code}</option>`).join('');
       const oOpts = '<option value="">None</option>' + opps.map(o => `<option value="${o.id}">${o.client} — ${o.yacht || o.topic}</option>`).join('');
 
       if (type === 'opp') {
@@ -4615,7 +4615,7 @@
 
 
 
-    currentUser = localStorage.getItem('currentUser') || 'GIAN'; 
+    currentUser = localStorage.getItem('currentUser') || 'GIAN';
     currentDashOwner = ''; // Default to seeing all users' data
     if (!localStorage.getItem('currentUser')) {
       localStorage.setItem('currentUser', currentUser);
