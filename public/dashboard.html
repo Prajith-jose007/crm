@@ -4203,7 +4203,7 @@
         const won = uOpps.filter(o => o.status === 'Close Won');
         return `<tr>
       <td><div class="avatar" style="background:${u.color}">${u.code.substring(0, 2)}</div></td>
-      <td><div style="font-weight:600">${u.name}</div><div style="font-size:11px;color:var(--text3)">${u.code}</div></td>
+      <td><div style="font-weight:600">${u.code}</div><div style="font-size:11px;color:var(--text3)">${u.name}</div></td>
       <td><span class="badge badge-blue">${u.role.replace('_', ' ')}</span></td>
       <td><span class="badge badge-orange">${open.length}</span></td>
       <td style="font-weight:700;color:var(--primary)">AED ${open.reduce((a, b) => a + Number(b.value || 0), 0).toLocaleString()}</td>
