@@ -3557,17 +3557,17 @@
 
       // ── CHART 1: Close Won by Owner (VERTICAL bar — owners on X, AED on Y) ──
       destroyChart('won-owner');
-      const wonByOwner = chartUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Close Won').reduce((a, b) => a + Number(b.value || 0), 0));
+      const wonByOwner = allUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Close Won').reduce((a, b) => a + Number(b.value || 0), 0));
       const ctx1 = document.getElementById('chart-won-owner');
       if (ctx1) {
         CHARTS['won-owner'] = new Chart(ctx1, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name),
+            labels: allUsers.map(u => u.name),
             datasets: [{
               label: 'Close Won (AED)', data: wonByOwner,
-              backgroundColor: chartUsers.map(u => u.color + 'bb'),
-              borderColor: chartUsers.map(u => u.color),
+              backgroundColor: allUsers.map(u => u.color + 'bb'),
+              borderColor: allUsers.map(u => u.color),
               borderWidth: 1.5, borderRadius: 5
             }]
           },
@@ -3592,10 +3592,10 @@
         CHARTS['phase-owner'] = new Chart(ctx2, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name),  // X-axis = owner names
+            labels: allUsers.map(u => u.name),  // X-axis = owner names
             datasets: phases.map((p, i) => ({
               label: phaseShort[i],  // legend = phase names
-              data: chartUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open' && o.phase === p).reduce((a, b) => a + Number(b.value || 0), 0)),
+              data: allUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open' && o.phase === p).reduce((a, b) => a + Number(b.value || 0), 0)),
               backgroundColor: phaseColors[i] + 'bb',
               borderColor: phaseColors[i],
               borderWidth: 1.5,
@@ -3618,18 +3618,18 @@
 
       // ── CHART 3: Number of Open Opps by Owner (horizontal bar) ──
       destroyChart('count-owner');
-      const countByOwner = chartUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open').length);
+      const countByOwner = allUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open').length);
       const ctx3 = document.getElementById('chart-count-owner');
       if (ctx3) {
         CHARTS['count-owner'] = new Chart(ctx3, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name),
+            labels: allUsers.map(u => u.name),
             datasets: [{
               label: '# Open Opportunities',
               data: countByOwner,
-              backgroundColor: chartUsers.map(u => u.color + 'cc'),
-              borderColor: chartUsers.map(u => u.color),
+              backgroundColor: allUsers.map(u => u.color + 'cc'),
+              borderColor: allUsers.map(u => u.color),
               borderWidth: 1.5,
               borderRadius: 4
             }]
