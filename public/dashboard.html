@@ -1344,7 +1344,7 @@
     <div id="page-dashboard" class="page active">
       <div class="page-header">
         <div>
-          <h1 class="page-title" id="dash-greeting">Welcome back</h1>
+          <h1 class="page-title" id="dash-greeting">Dashboard</h1>
           <div class="page-breadcrumb" id="dash-breadcrumb">Overview · All Users</div>
         </div>
         <div class="filter-bar">
@@ -4571,13 +4571,8 @@
       loadAllData().then(() => {
         updateUserBanners();
 
-        // Dynamic Greeting
-        const hour = new Date().getHours();
-        let greeting = "Welcome back";
-        if (hour < 12) greeting = "Good morning";
-        else if (hour < 18) greeting = "Good afternoon";
-        else greeting = "Good evening";
-        document.getElementById('dash-greeting').textContent = greeting;
+        // Static Title
+        document.getElementById('dash-greeting').textContent = 'Dashboard';
 
         document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
