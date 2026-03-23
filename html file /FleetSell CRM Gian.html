@@ -2020,17 +2020,16 @@ function renderDashboard() {
 
   // ── CHART 1: Close Won by Owner (VERTICAL bar — owners on X, AED on Y) ──
   destroyChart('won-owner');
-  const allChartUsers = getUsers(); // always show all owners for won chart context
-  const wonByOwner = allChartUsers.map(u => allOpps.filter(o => o.owner===u.code && o.status==='Close Won').reduce((a,b)=>a+Number(b.value||0),0));
+  const wonByOwner = chartUsers.map(u => allOpps.filter(o => o.owner===u.code && o.status==='Close Won').reduce((a,b)=>a+Number(b.value||0),0));
   const ctx1 = document.getElementById('chart-won-owner');
   if (ctx1) {
     CHARTS['won-owner'] = new Chart(ctx1, {
       type: 'bar',
       data: {
-        labels: allChartUsers.map(u => u.name),
+        labels: chartUsers.map(u => u.name),
         datasets: [{ label: 'Close Won (AED)', data: wonByOwner,
-          backgroundColor: allChartUsers.map(u => u.color+'bb'),
-          borderColor: allChartUsers.map(u => u.color),
+          backgroundColor: chartUsers.map(u => u.color+'bb'),
+          borderColor: chartUsers.map(u => u.color),
           borderWidth: 1.5, borderRadius: 5 }]
       },
       options: { ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
@@ -2048,16 +2047,15 @@ function renderDashboard() {
   const phases = ['1. Identification','2. Qualification','3. Proposal','4. Commitment'];
   const phaseShort = ['Identification','Qualification','Proposal','Commitment'];
   const phaseColors = ['#3A6EA5','#2E8B57','#B8860B','#C0572B']; // blue,green,gold,red
-  const allOwnersForPhase = getUsers();
   const ctx2 = document.getElementById('chart-phase-owner');
   if (ctx2) {
     CHARTS['phase-owner'] = new Chart(ctx2, {
       type: 'bar',
       data: {
-        labels: allOwnersForPhase.map(u => u.name),  // X-axis = owner names
+        labels: chartUsers.map(u => u.name),  // X-axis = owner names
         datasets: phases.map((p, i) => ({
           label: phaseShort[i],  // legend = phase names
-          data: allOwnersForPhase.map(u => allOpps.filter(o=>o.owner===u.code&&o.status==='Open'&&o.phase===p).reduce((a,b)=>a+Number(b.value||0),0)),
+          data: chartUsers.map(u => allOpps.filter(o=>o.owner===u.code&&o.status==='Open'&&o.phase===p).reduce((a,b)=>a+Number(b.value||0),0)),
           backgroundColor: phaseColors[i]+'bb',
           borderColor: phaseColors[i],
           borderWidth: 1.5,
