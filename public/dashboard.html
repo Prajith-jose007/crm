@@ -4374,10 +4374,10 @@
         const relOpps = opps.filter(o => (o.client || '').toLowerCase().includes((co.name || '').toLowerCase())).length;
         
         let clsColor = 'badge-gray';
-        if (co.classification === 'HS') clsColor = 'badge-green';
+        if (co.classification === 'HS') clsColor = 'badge-red';
         else if (co.classification === 'S') clsColor = 'badge-blue';
-        else if (co.classification === 'HP') clsColor = 'badge-orange';
-        else if (co.classification === 'G') clsColor = 'badge-gold';
+        else if (co.classification === 'HP') clsColor = 'badge-gold';
+        else if (co.classification === 'G') clsColor = 'badge-green';
 
         return `<tr>
       <td><div style="font-weight:600">${co.name}</div>${co.address ? `<div style="font-size:11px;color:var(--text3)">${co.address}</div>` : ''}</td>
