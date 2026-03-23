@@ -4620,9 +4620,11 @@
 
 
 
-    currentUser = 'BILAL'; // Default to admin role to enable all features
+    currentUser = localStorage.getItem('currentUser') || 'GIAN'; 
     currentDashOwner = ''; // Default to seeing all users' data
-    localStorage.setItem('currentUser', 'BILAL');
+    if (!localStorage.getItem('currentUser')) {
+      localStorage.setItem('currentUser', currentUser);
+    }
     initApp();
 
     // =============================================
