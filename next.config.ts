@@ -1,9 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    allowedDevOrigins: ["crm.dutchoriental.ddns.me"],
-  },
   async rewrites() {
     return [
       {
