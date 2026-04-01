@@ -2,11 +2,19 @@
 
 import React from "react";
 import { useAuth } from "./AuthProvider";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginGuard({ children }: { children: React.ReactNode }) {
     const { user, loading } = useAuth();
     const pathname = usePathname();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!loading && !user && pathname !== "/login") {
+            router.push("/login");
+        }
+    }, [user, loading, pathname, router]);
 
     if (loading) {
         return (
@@ -21,9 +29,6 @@ export default function LoginGuard({ children }: { children: React.ReactNode }) 
     }
 
     if (!user) {
-        if (typeof window !== "undefined") {
-            window.location.href = "/login";
-        }
         return null;
     }
 
