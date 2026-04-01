@@ -52,11 +52,26 @@ export default function Navbar() {
                 ))}
             </div>
             <div className="topbar-right">
-                <div id="user-chip" style={{ cursor: 'default' }}>
+                <div id="user-chip" style={{ cursor: 'pointer' }} onClick={() => {
+                    if (window.confirm("Are you sure you want to log out?")) {
+                        logout();
+                    }
+                }}>
                     <div className="user-avatar" style={{ background: user?.color || '#3A6EA5' }}>
                         {user ? user.code.substring(0, 2) : 'AL'}
                     </div>
                     <span id="chip-name">{user ? user.name : 'All Users'}</span>
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        style={{ marginLeft: '8px', opacity: 0.7 }}
+                    >
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                    </svg>
                 </div>
             </div>
         </header>

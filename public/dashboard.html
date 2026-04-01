@@ -3319,7 +3319,19 @@
           </div>
         `;
       });
+      html += `
+        <div class="dropdown-divider"></div>
+        <div class="user-option" onclick="doLogout()" style="color:var(--danger)">
+          <div class="ua" style="background:var(--danger)">LO</div>
+          <strong>Logout</strong>
+        </div>
+      `;
       dd.innerHTML = html;
+    }
+
+    function doLogout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = '/login';
     }
 
     function selectUser(code) {
