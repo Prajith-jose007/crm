@@ -1,4 +1,4 @@
-# FleetSell CRM Backend Developer Guide
+# SITRIX CRM Backend Developer Guide
 
 This backend has been developed based on the provided CRM HTML template. All fields find in the forms have been mapped to a robust MySQL relational database via Prisma ORM.
 

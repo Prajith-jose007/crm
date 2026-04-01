@@ -1,0 +1,18 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+export async function DELETE(
+    req: Request,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const id = parseInt(params.id);
+        await prisma.yacht.delete({
+            where: { id },
+        });
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("DELETE YACHT ERROR:", error);
+        return NextResponse.json({ error: "Failed to delete yacht" }, { status: 500 });
+    }
+}

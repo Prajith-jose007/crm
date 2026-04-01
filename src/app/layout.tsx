@@ -5,7 +5,7 @@ import AuthProvider from "@/components/AuthProvider";
 import LoginGuard from "@/components/LoginGuard";
 
 export const metadata: Metadata = {
-  title: "FleetSell CRM",
+  title: "SITRIX CRM",
   description: "Enterprise Yacht Sales Management",
 };
 
@@ -18,8 +18,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
-          <Navbar />
-          <div id="main">{children}</div>
+          <LoginGuard>
+            <Navbar />
+            <div id="main">{children}</div>
+          </LoginGuard>
         </AuthProvider>
       </body>
     </html>

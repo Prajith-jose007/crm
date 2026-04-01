@@ -8,6 +8,9 @@ export default function Navbar() {
     const pathname = usePathname();
     const { user, logout } = useAuth();
 
+    // Hide Navbar on login page
+    if (pathname === "/login") return null;
+
     const isManagerOrAdmin = user?.role === "ADMIN" || user?.role === "SALES_MANAGER";
 
     const navItems = [
@@ -31,7 +34,7 @@ export default function Navbar() {
                     <path d="M3 3h18v18H3z" rx="2" />
                     <path d="M3 9h18M9 21V9" />
                 </svg>
-                FleetSell CRM
+                SITRIX CRM
             </div>
             <div className="topbar-nav">
                 {navItems.map((item) => (

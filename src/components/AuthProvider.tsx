@@ -36,8 +36,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         const checkAuth = async () => {
             let savedCode = localStorage.getItem("currentUser");
             if (!savedCode || savedCode === "null" || savedCode === "undefined") {
-                savedCode = "BILAL";
-                localStorage.setItem("currentUser", "BILAL");
+                setLoading(false);
+                return;
             }
 
             try {
