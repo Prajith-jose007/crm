@@ -22,14 +22,7 @@ model User {
   @@map("users")
 }
 
-model Yacht {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@map("yachts")
-}
 
 model Company {
   id             Int             @id @default(autoincrement())

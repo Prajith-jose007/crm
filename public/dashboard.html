@@ -1641,34 +1641,6 @@
         </div>
       </div>
 
-      <div class="card" style="margin-top: 24px;">
-        <div class="card-header">
-          <div class="card-title">Yacht Management</div>
-        </div>
-        <div class="card-body">
-          <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
-            <input class="inp" id="new-yacht-name" placeholder="ENTER NEW YACHT NAME" style="max-width: 300px; text-transform: uppercase;">
-            <button class="btn btn-primary" onclick="createNewYacht()">
-               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              Add Yacht
-            </button>
-          </div>
-          <div class="tbl-wrap" style="max-height: 400px; overflow-y: auto;">
-            <table style="max-width: 500px;">
-              <thead>
-                <tr>
-                  <th>Yacht Name</th>
-                  <th style="width: 80px; text-align: right;">Action</th>
-                </tr>
-              </thead>
-              <tbody id="yachts-tbody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
 
 
@@ -2202,7 +2174,7 @@
     const COMPANY_TYPE_TS = { 'Private': 'PRIVATE', 'DMC': 'DMC', 'Freelancer': 'FREELANCER', 'Agency': 'AGENCY', 'Other': 'OTHER' };
 
     // In-memory cache
-    let _cache = { users: [], opps: [], visits: [], contacts: [], companies: [], yachts: [] };
+    let _cache = { users: [], opps: [], visits: [], contacts: [], companies: [] };
     let _loaded = false;
 
     // Convert API opportunity → HTML format
@@ -2320,13 +2292,12 @@
           return r.json();
         };
 
-        const [usersRes, oppsRes, visitsRes, contactsRes, companiesRes, yachtsRes] = await Promise.all([
+        const [usersRes, oppsRes, visitsRes, contactsRes, companiesRes] = await Promise.all([
           fetchAPI('/api/users'),
           fetchAPI('/api/opportunities'),
           fetchAPI('/api/visits'),
           fetchAPI('/api/contacts'),
           fetchAPI('/api/companies'),
-          fetchAPI('/api/yachts'),
         ]);
 
         _cache.users = Array.isArray(usersRes) ? usersRes.map(userFromAPI) : [];
@@ -2334,8 +2305,6 @@
         _cache.visits = Array.isArray(visitsRes) ? visitsRes.map(visitFromAPI) : [];
         _cache.contacts = Array.isArray(contactsRes) ? contactsRes.map(contactFromAPI) : [];
         _cache.companies = Array.isArray(companiesRes) ? companiesRes.map(companyFromAPI) : [];
-        _cache.yachts = Array.isArray(yachtsRes) ? yachtsRes : [];
-        initYachtSelect();
         _loaded = true;
         const currentPage = window.location.pathname.replace(/^\//, '') || 'dashboard';
         showPage(currentPage);
@@ -4247,74 +4216,6 @@
       </td>
     </tr>`;
       }).join('');
-      renderYachtsTable();
-    }
-
-    function renderYachtsTable() {
-      const tbody = document.getElementById('yachts-tbody');
-      if (!tbody) return;
-      tbody.innerHTML = _cache.yachts.map(y => `<tr>
-        <td style="font-weight:600">${y.name}</td>
-        <td style="text-align: right;">
-          <button class="btn btn-danger btn-sm" onclick="deleteYacht('${y.id}')">Remove</button>
-        </td>
-      </tr>`).join('');
-    }
-
-    async function createNewYacht() {
-      const nameInp = document.getElementById('new-yacht-name');
-      const name = nameInp.value.trim().toUpperCase();
-      if (!name) return toast('Yacht name is required', 'error');
-
-      const admin = getUserByCode(currentUser);
-      if (admin && admin.role !== 'ADMIN') return toast('Only admins can add yachts', 'error');
-
-      try {
-        const res = await fetch('/api/yachts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name })
-        });
-        if (res.ok) {
-          const newYacht = await res.json();
-          _cache.yachts.push(newYacht);
-          _cache.yachts.sort((a, b) => a.name.localeCompare(b.name));
-          nameInp.value = '';
-          renderYachtsTable();
-          initYachtSelect();
-          toast(`'${name}' added to yacht list`);
-        } else {
-          const err = await res.json();
-          toast(err.error || 'Failed to add yacht', 'error');
-        }
-      } catch (e) {
-        toast('Network error while adding yacht', 'error');
-      }
-    }
-
-    async function deleteYacht(id) {
-      if (!confirm('Are you sure you want to remove this yacht from the list?')) return;
-      try {
-        const res = await fetch(`/api/yachts/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-          _cache.yachts = _cache.yachts.filter(y => String(y.id) !== String(id));
-          renderYachtsTable();
-          initYachtSelect();
-          toast('Yacht removed');
-        }
-      } catch (e) {
-        toast('Failed to remove yacht', 'error');
-      }
-    }
-
-    function initYachtSelect() {
-      const sel = document.getElementById('o-yacht');
-      if (!sel) return;
-      const val = sel.value; // Store current selection
-      sel.innerHTML = '<option value="">Select yacht...</option>' + 
-        _cache.yachts.map(y => `<option value="${y.name}">${y.name}</option>`).join('') +
-        '<option value="NEW">NEW</option>';
-      sel.value = val;
     }
 
     function saveUser() {
