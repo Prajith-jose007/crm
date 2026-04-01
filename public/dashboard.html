@@ -3744,7 +3744,7 @@
       }
 
       const search = (document.getElementById('opp-search') || {}).value?.toLowerCase() || '';
-      const ownerF = (oppOwnerFilterEl || {}).value || (isManagerOrAdmin ? '' : currentUser) || '';
+      const ownerF = (oppOwnerFilterEl || {}).value || '';
       const phaseF = (document.getElementById('opp-filter-phase') || {}).value || '';
       const prioF = (document.getElementById('opp-filter-priority') || {}).value || '';
       const statusF = (document.getElementById('opp-filter-status') || {}).value || '';
@@ -3918,7 +3918,7 @@
         visOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
       }
 
-      const ownerF = (visOwnerFilterEl || {}).value || (isManagerOrAdmin ? '' : currentUser) || '';
+      const ownerF = (visOwnerFilterEl || {}).value || '';
       const sentF = (document.getElementById('visit-filter-sentiment') || {}).value || '';
 
       const filtered = visits.filter(v => {
