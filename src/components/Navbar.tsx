@@ -19,13 +19,11 @@ export default function Navbar() {
         { label: "Visit Reports", path: "/visits" },
     ];
 
-    if (isManagerOrAdmin) {
-        navItems.push(
-            { label: "Contacts", path: "/contacts" },
-            { label: "Companies", path: "/companies" },
-            { label: "Users", path: "/users" }
-        );
-    }
+    navItems.push(
+        { label: "Contacts", path: "/contacts" },
+        { label: "Companies", path: "/companies" },
+        { label: "Users", path: "/users" }
+    );
 
     return (
         <header id="topbar">

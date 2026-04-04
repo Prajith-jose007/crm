@@ -2179,12 +2179,14 @@
 
     // Convert API opportunity → HTML format
     function oppFromAPI(o) {
+      const owner = o.owner || {};
+      const ownerCode = owner.code || (owner.name ? owner.name.toUpperCase().split(' ')[0] : (owner.id ? 'U' + owner.id : ''));
       return {
         id: String(o.id),
         client: o.clientName || '',
         yacht: o.yacht || '',
         topic: o.eventTopic || '',
-        owner: o.owner ? (o.owner.code || (o.owner.name ? o.owner.name.toUpperCase().split(' ')[0] : 'U' + o.owner.id)) : '',
+        owner: ownerCode,
         priority: PRIORITY_FROM_API[o.priority] || o.priority || 'Warm',
         phase: PHASE_FROM_API[o.phase] || o.phase || '1. Identification',
         status: STATUS_FROM_API[o.status] || o.status || 'Open',
@@ -2205,7 +2207,7 @@
       return {
         id: String(u.id),
         name: u.name || '',
-        code: u.code || (u.name ? u.name.toUpperCase().split(' ')[0] : 'U' + u.id),
+        code: u.code || (u.name ? u.name.toUpperCase().split(' ')[0] : (u.id ? 'U' + u.id : '')),
         role: u.role || 'SALES_EXECUTIVE',
         color: u.color || '#3A6EA5',
       };
@@ -2213,13 +2215,15 @@
 
     // Convert API visit → HTML format
     function visitFromAPI(v) {
+      const owner = v.owner || {};
+      const ownerCode = owner.code || (owner.name ? owner.name.toUpperCase().split(' ')[0] : (owner.id ? 'U' + owner.id : ''));
       return {
         id: String(v.id),
         company: v.company ? v.company.name : (v.companyName || ''),
         contactName: v.contact ? `${v.contact.firstName} ${v.contact.lastName}`.trim() : '',
         date: v.visitDate ? v.visitDate.split('T')[0] : '',
         type: VISIT_TYPE_FROM_API[v.visitType] || v.visitType || 'In-Person',
-        owner: v.owner ? (v.owner.code || (v.owner.name ? v.owner.name.toUpperCase().split(' ')[0] : 'U' + v.owner.id)) : '',
+        owner: ownerCode,
         opp: '',
         attendees: v.attendees || '',
         objective: v.objective || '',
@@ -2300,8 +2304,11 @@
           fetchAPI('/api/companies'),
         ]);
 
-        _cache.users = Array.isArray(usersRes) ? usersRes.map(userFromAPI) : [];
-        _cache.opps = Array.isArray(oppsRes) ? oppsRes.map(oppFromAPI) : [];
+        if (!Array.isArray(usersRes)) throw new Error('Invalid users response');
+        if (!Array.isArray(oppsRes)) throw new Error('Invalid opportunities response');
+
+        _cache.users = usersRes.map(userFromAPI);
+        _cache.opps = oppsRes.map(oppFromAPI);
         _cache.visits = Array.isArray(visitsRes) ? visitsRes.map(visitFromAPI) : [];
         _cache.contacts = Array.isArray(contactsRes) ? contactsRes.map(contactFromAPI) : [];
         _cache.companies = Array.isArray(companiesRes) ? companiesRes.map(companyFromAPI) : [];
@@ -3363,20 +3370,23 @@
     }
 
     function updateUserBanners() {
-      // Banners were tied to currentUser. Hide them since dropdowns already exist.
-      const banners = ['user-banner', 'user-banner-opp', 'user-banner-visit'];
-      banners.forEach(b => {
-        const el = document.getElementById(b);
-        if (el) el.classList.add('hidden');
-      });
-      const u = currentDashOwner ? getUserByCode(currentDashOwner) : null;
-      if (document.getElementById('dash-breadcrumb'))
-        document.getElementById('dash-breadcrumb').textContent = u ? `Overview · ${u.code}` : 'Overview · ALL USERS';
+      try {
+        const banners = ['user-banner', 'user-banner-opp', 'user-banner-visit'];
+        banners.forEach(b => {
+          const el = document.getElementById(b);
+          if (el) el.classList.add('hidden');
+        });
+        const u = currentDashOwner ? getUserByCode(currentDashOwner) : null;
+        const bread = document.getElementById('dash-breadcrumb');
+        if (bread) {
+          bread.textContent = u ? `Overview · ${u.code || 'User'}` : 'Overview · ALL USERS';
+        }
+      } catch (e) { console.error('Banner update error', e); }
     }
 
     function toggleUserDropdown() {
       const dd = document.getElementById('user-dropdown');
-      dd.classList.toggle('open');
+      if (dd) dd.classList.toggle('open');
       renderUserDropdown();
     }
     document.addEventListener('click', e => {
@@ -3388,6 +3398,13 @@
     // NAVIGATION
     // =============================================
     function showPage(name) {
+      if (!name || name === 'favicon.ico') name = 'dashboard';
+      // Normalize name to exclude leading slash
+      if (name.startsWith('/')) name = name.substring(1);
+      
+      const pages = ['dashboard', 'opportunities', 'visits', 'contacts', 'companies', 'users'];
+      if (!pages.includes(name)) name = 'dashboard';
+
       // Update URL without reload
       const path = name === 'dashboard' ? '/' : '/' + name;
       if (window.location.pathname !== path && window.location.pathname !== path + '/') {
@@ -3395,17 +3412,25 @@
       }
 
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.topbar-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('page-' + name).classList.add('active');
+      const activePage = document.getElementById('page-' + name);
+      if (activePage) activePage.classList.add('active');
+
       document.querySelectorAll('.topbar-btn').forEach(b => {
-        if (b.getAttribute('onclick').includes(name)) b.classList.add('active');
+        b.classList.remove('active');
+        const clickAttr = b.getAttribute('onclick') || '';
+        if (clickAttr && clickAttr.includes(name)) b.classList.add('active');
       });
+
       if (name === 'dashboard') renderDashboard();
-      if (name === 'opportunities') { populateOwnerFilters(); renderOpps(); }
-      if (name === 'visits') { populateOwnerFilters(); renderVisits(); }
-      if (name === 'contacts') renderContacts();
-      if (name === 'users') renderUsersPage();
-      if (name === 'companies') renderCompanies();
+      else if (name === 'opportunities') { populateOwnerFilters(); renderOpps(); }
+      else if (name === 'visits') { populateOwnerFilters(); renderVisits(); }
+      else if (name === 'contacts') renderContacts();
+      else if (name === 'companies') renderCompanies();
+      else if (name === 'users') renderUsersPage();
+      
+      // Close mobile dropdown if open
+      const dd = document.getElementById('user-dropdown');
+      if (dd) dd.classList.remove('open');
     }
 
     window.addEventListener('popstate', () => {
@@ -3516,27 +3541,22 @@
       const dashSel = document.getElementById('dash-owner-select');
       const u = getUserByCode(currentUser);
       const isManagerOrAdmin = u && (u.role === 'ADMIN' || u.role === 'SALES_MANAGER');
-      const dashDefUser = isManagerOrAdmin ? '' : (currentUser || '');
-
       if (dashSel) {
-        if (!isManagerOrAdmin) {
-          dashSel.style.display = 'none';
-          dashSel.value = dashDefUser;
-          currentDashOwner = dashDefUser;
-        } else {
-          dashSel.style.display = 'inline-block';
-          if (dashSel.options.length <= 1) {
-            dashSel.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${(uObj.name ? uObj.name.split(' ')[0] : uObj.code)}</option>`).join('');
-          }
-          if (currentDashOwner !== undefined && currentDashOwner !== null) {
-            dashSel.value = currentDashOwner;
-          }
+        dashSel.style.display = 'inline-block';
+        if (dashSel.options.length <= 1) {
+          dashSel.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${(uObj.name ? uObj.name.split(' ')[0] : uObj.code)}</option>`).join('');
+        }
+        if (currentDashOwner !== undefined && currentDashOwner !== null) {
+          dashSel.value = currentDashOwner;
         }
       }
 
       const allOpps = DB.get('opps');
-      const selectedOwner = dashSel ? dashSel.value : dashDefUser;
-      const scopedOpps = selectedOwner ? allOpps.filter(o => (o.owner || '').toUpperCase() === selectedOwner.toUpperCase()) : allOpps;
+      const selectedOwner = (dashSel && dashSel.value) ? dashSel.value : '';
+      const scopedOpps = selectedOwner ? allOpps.filter(o => {
+        const ownerCode = (o.owner || '').toUpperCase();
+        return ownerCode === selectedOwner.toUpperCase();
+      }) : allOpps;
 
       document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -3733,13 +3753,9 @@
 
     function renderOpps() {
       const opps = DB.get('opps');
-      const u = getUserByCode(currentUser);
-      const isManagerOrAdmin = u && (u.role === 'ADMIN' || u.role === 'SALES_MANAGER');
       const oppOwnerFilterEl = document.getElementById('opp-filter-owner');
 
-      if (!isManagerOrAdmin && oppOwnerFilterEl) {
-        oppOwnerFilterEl.style.display = 'none';
-      } else if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('ALL USERS')) {
+      if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('ALL USERS')) {
         oppOwnerFilterEl.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${(uObj.name ? uObj.name.split(' ')[0] : uObj.code)}</option>`).join('');
       }
 
@@ -3912,9 +3928,7 @@
       const isManagerOrAdmin = u && (u.role === 'ADMIN' || u.role === 'SALES_MANAGER');
       const visOwnerFilterEl = document.getElementById('visit-filter-owner');
 
-      if (!isManagerOrAdmin && visOwnerFilterEl) {
-        visOwnerFilterEl.style.display = 'none';
-      } else if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('ALL USERS')) {
+      if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('ALL USERS')) {
         visOwnerFilterEl.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name || uObj.code}</option>`).join('');
       }
 
@@ -4600,23 +4614,22 @@
         const activeU = currentDashOwner ? getUserByCode(currentDashOwner) : null;
         const chipAvatar = document.getElementById('chip-avatar');
         const chipName = document.getElementById('chip-name');
-        if (activeU) {
-          chipAvatar.textContent = activeU.code.substring(0, 2);
-          chipAvatar.style.background = `linear-gradient(135deg, ${activeU.color}cc, ${activeU.color})`;
-          chipName.textContent = activeU.name.split(' ')[0];
-        } else {
-          chipAvatar.textContent = 'AL';
-          chipAvatar.style.background = '#555';
-          chipName.textContent = 'ALL USERS';
+        if (chipAvatar && chipName) {
+          if (activeU) {
+            chipAvatar.textContent = (activeU.code || 'U').substring(0, 2);
+            chipAvatar.style.background = `linear-gradient(135deg, ${activeU.color || '#555'}cc, ${activeU.color || '#555'})`;
+            chipName.textContent = activeU.name ? activeU.name.split(' ')[0] : (activeU.code || 'User');
+          } else {
+            chipAvatar.textContent = 'AL';
+            chipAvatar.style.background = '#555';
+            chipName.textContent = 'ALL USERS';
+          }
         }
 
-        // Show manager buttons only for ADMIN and SALES_MANAGER roles
-        const loggedInUser = getUserByCode(currentUser);
-        const isAdminOrManager = loggedInUser && (loggedInUser.role === 'ADMIN' || loggedInUser.role === 'SALES_MANAGER');
-        
-        document.getElementById('nav-btn-contacts').style.display = isAdminOrManager ? 'flex' : 'none';
-        document.getElementById('nav-btn-companies').style.display = isAdminOrManager ? 'flex' : 'none';
-        document.getElementById('nav-btn-users').style.display = isAdminOrManager ? 'flex' : 'none';
+        // Keep navigation visible for all logged-in users as requested
+        document.getElementById('nav-btn-contacts').style.display = 'flex';
+        document.getElementById('nav-btn-companies').style.display = 'flex';
+        document.getElementById('nav-btn-users').style.display = 'flex';
 
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -4641,10 +4654,10 @@
     currentUser = localStorage.getItem('currentUser');
     if (!currentUser || currentUser === 'null' || currentUser === 'undefined') {
       window.location.href = '/login';
-      return; 
+    } else {
+      currentDashOwner = ''; 
+      initApp();
     }
-    currentDashOwner = ''; // Default to seeing all users' data
-    initApp();
 
     // =============================================
     // CLIENT NAME AUTOCOMPLETE
