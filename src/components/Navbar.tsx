@@ -60,7 +60,7 @@ export default function Navbar() {
                     <div className="user-avatar" style={{ background: user?.color || '#3A6EA5' }}>
                         {user ? user.code.substring(0, 2) : 'AL'}
                     </div>
-                    <span id="chip-name">{user ? user.name : 'All Users'}</span>
+                    <span id="chip-name">{user ? user.name.split(' ')[0] : 'ALL USERS'}</span>
                     <svg
                         width="16"
                         height="16"

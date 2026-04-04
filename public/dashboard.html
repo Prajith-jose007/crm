@@ -3417,7 +3417,7 @@
 
     function populateOwnerFilters() {
       const users = getUsers();
-      const opts = '<option value="">Select owner *</option>' + users.map(u => `<option value="${u.code}">${u.name || u.code}</option>`).join('');
+      const opts = '<option value="">Select owner *</option>' + users.map(u => `<option value="${u.code}">${(u.name ? u.name.split(' ')[0] : u.code)}</option>`).join('');
       ['opp-filter-owner', 'visit-filter-owner'].forEach(id => {
         const el = document.getElementById(id); if (el) el.innerHTML = opts;
         if (currentUser && el) el.value = currentUser;
@@ -3526,7 +3526,7 @@
         } else {
           dashSel.style.display = 'inline-block';
           if (dashSel.options.length <= 1) {
-            dashSel.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name || uObj.code}</option>`).join('');
+            dashSel.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${(uObj.name ? uObj.name.split(' ')[0] : uObj.code)}</option>`).join('');
           }
           if (currentDashOwner !== undefined && currentDashOwner !== null) {
             dashSel.value = currentDashOwner;
@@ -3576,7 +3576,7 @@
         CHARTS['won-owner'] = new Chart(ctx1, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name || u.code),
+            labels: chartUsers.map(u => (u.name ? u.name.split(' ')[0] : u.code)),
             datasets: [{
               label: 'Close Won (AED)', data: wonByOwner,
               backgroundColor: chartUsers.map(u => u.color + 'bb'),
@@ -3605,7 +3605,7 @@
         CHARTS['phase-owner'] = new Chart(ctx2, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name || u.code),  // X-axis = owner names
+            labels: chartUsers.map(u => (u.name ? u.name.split(' ')[0] : u.code)),  // X-axis = owner names
             datasets: phases.map((p, i) => ({
               label: phaseShort[i],  // legend = phase names
               data: chartUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open' && o.phase === p).reduce((a, b) => a + Number(b.value || 0), 0)),
@@ -3637,7 +3637,7 @@
         CHARTS['count-owner'] = new Chart(ctx3, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.name || u.code),
+            labels: chartUsers.map(u => (u.name ? u.name.split(' ')[0] : u.code)),
             datasets: [{
               label: '# Open Opportunities',
               data: countByOwner,
@@ -3740,7 +3740,7 @@
       if (!isManagerOrAdmin && oppOwnerFilterEl) {
         oppOwnerFilterEl.style.display = 'none';
       } else if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('ALL USERS')) {
-        oppOwnerFilterEl.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name || uObj.code}</option>`).join('');
+        oppOwnerFilterEl.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${(uObj.name ? uObj.name.split(' ')[0] : uObj.code)}</option>`).join('');
       }
 
       const search = (document.getElementById('opp-search') || {}).value?.toLowerCase() || '';
@@ -4603,17 +4603,20 @@
         if (activeU) {
           chipAvatar.textContent = activeU.code.substring(0, 2);
           chipAvatar.style.background = `linear-gradient(135deg, ${activeU.color}cc, ${activeU.color})`;
-          chipName.textContent = activeU.name;
+          chipName.textContent = activeU.name.split(' ')[0];
         } else {
           chipAvatar.textContent = 'AL';
           chipAvatar.style.background = '#555';
           chipName.textContent = 'ALL USERS';
         }
 
-        // Always show manager buttons since login is removed
-        document.getElementById('nav-btn-contacts').style.display = 'flex';
-        document.getElementById('nav-btn-companies').style.display = 'flex';
-        document.getElementById('nav-btn-users').style.display = 'flex';
+        // Show manager buttons only for ADMIN and SALES_MANAGER roles
+        const loggedInUser = getUserByCode(currentUser);
+        const isAdminOrManager = loggedInUser && (loggedInUser.role === 'ADMIN' || loggedInUser.role === 'SALES_MANAGER');
+        
+        document.getElementById('nav-btn-contacts').style.display = isAdminOrManager ? 'flex' : 'none';
+        document.getElementById('nav-btn-companies').style.display = isAdminOrManager ? 'flex' : 'none';
+        document.getElementById('nav-btn-users').style.display = isAdminOrManager ? 'flex' : 'none';
 
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -4638,6 +4641,7 @@
     currentUser = localStorage.getItem('currentUser');
     if (!currentUser || currentUser === 'null' || currentUser === 'undefined') {
       window.location.href = '/login';
+      return; 
     }
     currentDashOwner = ''; // Default to seeing all users' data
     initApp();

@@ -34,7 +34,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     useEffect(() => {
         const checkAuth = async () => {
-            let savedCode = localStorage.getItem("currentUser");
+            const savedCode = localStorage.getItem("currentUser");
             if (!savedCode || savedCode === "null" || savedCode === "undefined") {
                 setLoading(false);
                 return;
@@ -48,11 +48,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                     if (loggedIn) {
                         setUser(loggedIn);
                     } else {
-                        // If BILAL not found, pick first user
-                        if (users.length > 0) {
-                            setUser(users[0]);
-                            localStorage.setItem("currentUser", users[0].code);
-                        }
+                        // User not found, clear localStorage and force login
+                        localStorage.removeItem("currentUser");
+                        setUser(null);
                     }
                 }
             } catch (err) {
@@ -85,6 +83,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const logout = () => {
         localStorage.removeItem("currentUser");
         setUser(null);
+        window.location.href = '/login';
     };
 
     return (
