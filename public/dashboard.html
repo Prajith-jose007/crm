@@ -1326,7 +1326,7 @@
     <div class="topbar-right">
       <div id="user-chip" onclick="toggleUserDropdown()">
         <div class="user-avatar" id="chip-avatar">AL</div>
-        <span id="chip-name">All Users</span>
+        <span id="chip-name">ALL USERS</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M6 9l6 6 6-6" />
         </svg>
@@ -1345,12 +1345,12 @@
       <div class="page-header">
         <div>
           <h1 class="page-title" id="dash-greeting">Dashboard</h1>
-          <div class="page-breadcrumb" id="dash-breadcrumb">Overview · All Users</div>
+          <div class="page-breadcrumb" id="dash-breadcrumb">Overview · ALL USERS</div>
         </div>
         <div class="filter-bar">
           <div style="display:flex;align-items:center;gap:8px;">
             <select id="dash-owner-select" onchange="dashSelectUser();" class="filter-sel" style="padding-right:32px;">
-              <option value="">View as: All Users</option>
+              <option value="">View as: ALL USERS</option>
             </select>
           </div>
           <div style="font-size:12px;color:var(--text3);font-weight:500;" id="dash-date"></div>
@@ -1382,7 +1382,7 @@
             <div class="card-title">Open Opportunity Value by Phase &amp; Owner</div>
           </div>
           <div class="card-body">
-            <div class="chart-wrap" style="height:230px;"><canvas id="chart-phase-owner"></canvas></div>
+            <div class="chart-wrap" style="height:320px;"><canvas id="chart-phase-owner"></canvas></div>
           </div>
         </div>
       </div>
@@ -1394,7 +1394,7 @@
             <div class="card-title">Number of Open Opportunities by Owner</div>
           </div>
           <div class="card-body">
-            <div class="chart-wrap" style="height:230px;"><canvas id="chart-count-owner"></canvas></div>
+            <div class="chart-wrap" style="height:320px;"><canvas id="chart-count-owner"></canvas></div>
           </div>
         </div>
         <div class="card">
@@ -1455,7 +1455,7 @@
               <input type="text" id="opp-search" placeholder="Search client, yacht, topic..." oninput="renderOpps()">
             </div>
             <select class="filter-sel" id="opp-filter-owner" onchange="renderOpps()">
-              <option value="">All Owners</option>
+              <option value="">ALL USERS</option>
             </select>
             <select class="filter-sel" id="opp-filter-phase" onchange="renderOpps()">
               <option value="">All Phases</option>
@@ -1538,7 +1538,7 @@
           <option>Email</option>
         </select>
         <select class="filter-sel" id="visit-filter-owner" onchange="renderVisits()">
-          <option value="">All Owners</option>
+          <option value="">ALL USERS</option>
         </select>
         <select class="filter-sel" id="visit-filter-sentiment" onchange="renderVisits()">
           <option value="">All Sentiment</option>
@@ -2184,7 +2184,7 @@
         client: o.clientName || '',
         yacht: o.yacht || '',
         topic: o.eventTopic || '',
-        owner: o.owner ? o.owner.code : '',
+        owner: o.owner ? (o.owner.code || (o.owner.name ? o.owner.name.toUpperCase().split(' ')[0] : 'U' + o.owner.id)) : '',
         priority: PRIORITY_FROM_API[o.priority] || o.priority || 'Warm',
         phase: PHASE_FROM_API[o.phase] || o.phase || '1. Identification',
         status: STATUS_FROM_API[o.status] || o.status || 'Open',
@@ -2205,7 +2205,7 @@
       return {
         id: String(u.id),
         name: u.name || '',
-        code: u.code || u.name.toUpperCase().split(' ')[0],
+        code: u.code || (u.name ? u.name.toUpperCase().split(' ')[0] : 'U' + u.id),
         role: u.role || 'SALES_EXECUTIVE',
         color: u.color || '#3A6EA5',
       };
@@ -2219,7 +2219,7 @@
         contactName: v.contact ? `${v.contact.firstName} ${v.contact.lastName}`.trim() : '',
         date: v.visitDate ? v.visitDate.split('T')[0] : '',
         type: VISIT_TYPE_FROM_API[v.visitType] || v.visitType || 'In-Person',
-        owner: v.owner ? (v.owner.code || v.owner.name) : '',
+        owner: v.owner ? (v.owner.code || (v.owner.name ? v.owner.name.toUpperCase().split(' ')[0] : 'U' + v.owner.id)) : '',
         opp: '',
         attendees: v.attendees || '',
         objective: v.objective || '',
@@ -3307,7 +3307,7 @@
       let html = `
         <div class="user-option ${!currentDashOwner ? 'selected' : ''}" onclick="selectUser('')">
           <div class="ua" style="background:#555">AL</div>
-          All Users
+          ALL USERS
         </div>
         <div class="dropdown-divider"></div>
       `;
@@ -3341,7 +3341,7 @@
       const u = currentDashOwner ? getUserByCode(currentDashOwner) : null;
       document.getElementById('chip-avatar').textContent = u ? u.code.substring(0, 2) : 'AL';
       document.getElementById('chip-avatar').style.background = u ? `linear-gradient(135deg, ${u.color}cc, ${u.color})` : '#555';
-      document.getElementById('chip-name').textContent = u ? u.code : 'All Users';
+      document.getElementById('chip-name').textContent = u ? u.code : 'ALL USERS';
 
       // Update dashboard filter
       const dashSel = document.getElementById('dash-owner-select');
@@ -3371,7 +3371,7 @@
       });
       const u = currentDashOwner ? getUserByCode(currentDashOwner) : null;
       if (document.getElementById('dash-breadcrumb'))
-        document.getElementById('dash-breadcrumb').textContent = u ? `Overview · ${u.code}` : 'Overview · All Users';
+        document.getElementById('dash-breadcrumb').textContent = u ? `Overview · ${u.code}` : 'Overview · ALL USERS';
     }
 
     function toggleUserDropdown() {
@@ -3417,7 +3417,7 @@
 
     function populateOwnerFilters() {
       const users = getUsers();
-      const opts = '<option value="">All Owners</option>' + users.map(u => `<option value="${u.code}">${u.code}</option>`).join('');
+      const opts = '<option value="">Select owner *</option>' + users.map(u => `<option value="${u.code}">${u.name || u.code}</option>`).join('');
       ['opp-filter-owner', 'visit-filter-owner'].forEach(id => {
         const el = document.getElementById(id); if (el) el.innerHTML = opts;
         if (currentUser && el) el.value = currentUser;
@@ -3526,7 +3526,7 @@
         } else {
           dashSel.style.display = 'inline-block';
           if (dashSel.options.length <= 1) {
-            dashSel.innerHTML = '<option value="">All Users</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
+            dashSel.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name || uObj.code}</option>`).join('');
           }
           if (currentDashOwner !== undefined && currentDashOwner !== null) {
             dashSel.value = currentDashOwner;
@@ -3576,7 +3576,7 @@
         CHARTS['won-owner'] = new Chart(ctx1, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.code),
+            labels: chartUsers.map(u => u.name || u.code),
             datasets: [{
               label: 'Close Won (AED)', data: wonByOwner,
               backgroundColor: chartUsers.map(u => u.color + 'bb'),
@@ -3605,7 +3605,7 @@
         CHARTS['phase-owner'] = new Chart(ctx2, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.code),  // X-axis = owner names
+            labels: chartUsers.map(u => u.name || u.code),  // X-axis = owner names
             datasets: phases.map((p, i) => ({
               label: phaseShort[i],  // legend = phase names
               data: chartUsers.map(u => allOpps.filter(o => o.owner === u.code && o.status === 'Open' && o.phase === p).reduce((a, b) => a + Number(b.value || 0), 0)),
@@ -3637,7 +3637,7 @@
         CHARTS['count-owner'] = new Chart(ctx3, {
           type: 'bar',
           data: {
-            labels: chartUsers.map(u => u.code),
+            labels: chartUsers.map(u => u.name || u.code),
             datasets: [{
               label: '# Open Opportunities',
               data: countByOwner,
@@ -3652,7 +3652,7 @@
             plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.raw + ' opportunit' + (ctx.raw === 1 ? 'y' : 'ies') } } },
             scales: {
               x: { grid: { color: '#f3f2f1' }, ticks: { font: { size: 11 }, color: '#605e5c', stepSize: 1, callback: v => Number.isInteger(v) ? v : '' }, border: { display: false } },
-              y: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#323130' }, border: { display: false } }
+              y: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#323130', autoSkip: false }, border: { display: false } }
             }
           }
         });
@@ -3739,8 +3739,8 @@
 
       if (!isManagerOrAdmin && oppOwnerFilterEl) {
         oppOwnerFilterEl.style.display = 'none';
-      } else if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('All Owners')) {
-        oppOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
+      } else if (oppOwnerFilterEl && !oppOwnerFilterEl.innerHTML.includes('ALL USERS')) {
+        oppOwnerFilterEl.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name || uObj.code}</option>`).join('');
       }
 
       const search = (document.getElementById('opp-search') || {}).value?.toLowerCase() || '';
@@ -3914,8 +3914,8 @@
 
       if (!isManagerOrAdmin && visOwnerFilterEl) {
         visOwnerFilterEl.style.display = 'none';
-      } else if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('All Owners')) {
-        visOwnerFilterEl.innerHTML = '<option value="">All Owners</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.code}</option>`).join('');
+      } else if (visOwnerFilterEl && !visOwnerFilterEl.innerHTML.includes('ALL USERS')) {
+        visOwnerFilterEl.innerHTML = '<option value="">ALL USERS</option>' + getUsers().map(uObj => `<option value="${uObj.code}">${uObj.name || uObj.code}</option>`).join('');
       }
 
       const ownerF = (visOwnerFilterEl || {}).value || '';
@@ -4607,7 +4607,7 @@
         } else {
           chipAvatar.textContent = 'AL';
           chipAvatar.style.background = '#555';
-          chipName.textContent = 'All Users';
+          chipName.textContent = 'ALL USERS';
         }
 
         // Always show manager buttons since login is removed
